@@ -1,0 +1,50 @@
+---
+logstash_forwarder_logstash_server: 128.199.127.88
+logstash_forwarder_logstash_server_port: 5000
+
+logstash_ssl_dir: /etc/pki/logstash
+logstash_forwarder_ssl_certificate_file: logstash-forwarder.crt
+logstash_forwarder_ssl_certificate_src_dir: ../files/certs
+
+logstash_forwarder_files:
+  - paths:
+      - /var/log/syslog
+      - /var/log/auth.log
+    fields:
+      type: syslog
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+  - paths:
+      - /var/log/nginx/access.log
+      - /var/log/nginx/error.log
+    fields:
+      type: nginx
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+  - paths:
+      - /var/log/mysql/error.log
+    fields:
+      type: mysql
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+  - paths:
+      - /var/log/apache2/error.log
+      - /var/log/apache2/access.log
+    fields:
+      type: apache2
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+
+  # To add more sets of files...
+  # - paths:
+  #     - /var/log/boot.log
+  #   fields:
+  #     type: syslog

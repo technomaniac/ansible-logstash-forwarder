@@ -1,0 +1,5 @@
+---
+- hosts: logstash-forwarder
+  remote_user: root
+  roles:
+    - logstash-forwarder
