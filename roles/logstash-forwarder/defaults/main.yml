@@ -4,7 +4,6 @@ logstash_forwarder_logstash_server_port: 5000
 
 logstash_ssl_dir: /etc/pki/logstash
 logstash_forwarder_ssl_certificate_file: logstash-forwarder.crt
-logstash_forwarder_ssl_certificate_src_dir: ../files/certs
 
 logstash_forwarder_files:
   - paths:
@@ -38,6 +37,22 @@ logstash_forwarder_files:
       - /var/log/apache2/access.log
     fields:
       type: apache2
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+  - paths:
+      - /var/log/redis/*.log
+    fields:
+      type: redis
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+      nodename: "{{ ansible_nodename }}"
+
+   paths:
+      - /var/log/uwsgi/*.log
+    fields:
+      type: uwsgi
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
       nodename: "{{ ansible_nodename }}"
