@@ -49,7 +49,7 @@ logstash_forwarder_files:
       hostname: "{{ ansible_hostname }}"
       nodename: "{{ ansible_nodename }}"
 
-   paths:
+  - paths:
       - /var/log/uwsgi/*.log
     fields:
       type: uwsgi
