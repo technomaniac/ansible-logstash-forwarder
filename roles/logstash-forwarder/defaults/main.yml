@@ -1,8 +1,8 @@
 ---
-logstash_forwarder_logstash_server: 128.199.127.88
+logstash_forwarder_logstash_server: 45.56.117.106
 logstash_forwarder_logstash_server_port: 5000
 
-logstash_ssl_dir: /etc/pki/logstash
+logstash_ssl_dir: /etc/pki/tls/certs
 logstash_forwarder_ssl_certificate_file: logstash-forwarder.crt
 
 logstash_forwarder_files:
@@ -13,24 +13,31 @@ logstash_forwarder_files:
       type: syslog
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
-      nodename: "{{ ansible_nodename }}"
+      
 
   - paths:
       - /var/log/nginx/access.log
-      - /var/log/nginx/error.log
     fields:
-      type: nginx
+      type: nginx-access
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
-      nodename: "{{ ansible_nodename }}"
+       
 
   - paths:
-      - /var/log/mysql/error.log
+      - /var/log/nginx/error.log
+    fields:
+      type: nginx-error
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+
+
+  - paths:
+      - /var/log/mysql/*.log
     fields:
       type: mysql
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
-      nodename: "{{ ansible_nodename }}"
+
 
   - paths:
       - /var/log/apache2/error.log
@@ -39,7 +46,7 @@ logstash_forwarder_files:
       type: apache2
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
-      nodename: "{{ ansible_nodename }}"
+
 
   - paths:
       - /var/log/redis/*.log
@@ -47,7 +54,7 @@ logstash_forwarder_files:
       type: redis
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
-      nodename: "{{ ansible_nodename }}"
+
 
   - paths:
       - /var/log/uwsgi/*.log
@@ -55,7 +62,34 @@ logstash_forwarder_files:
       type: uwsgi
       hostip: "{{ ansible_eth0.ipv4.address }}"
       hostname: "{{ ansible_hostname }}"
+
+
+  - paths:
+      - /var/log/mongodb/*.log
+    fields:
+      type: mongodb
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
       nodename: "{{ ansible_nodename }}"
+
+  - paths:
+      - /var/log/haproxy/*.log
+    fields:
+      type: haproxy
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+
+
+  - paths:
+      - /var/log/upstart/xandar.log
+      - /var/log/upstart/infinity.log
+      - /var/log/upstart/starlord.log
+    fields:
+      type: upstart
+      hostip: "{{ ansible_eth0.ipv4.address }}"
+      hostname: "{{ ansible_hostname }}"
+
+
 
 
   # To add more sets of files...

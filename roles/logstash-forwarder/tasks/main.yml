@@ -1,36 +1,94 @@
 ---
-- include: setup-RedHat.yml
-  when: ansible_os_family == 'RedHat'
+- name: Install required system packages.
+  sudo: yes
+  apt: pkg={{ item }} state=installed
+  with_items:
+    - gccgo-go
+    - ruby
+    - ruby-dev
+    - git
+    - build-essential
+  tags:
+    - prepare
 
-- include: setup-Debian.yml
-  when: ansible_os_family == 'Debian'
+- name: Install gem fpm.
+  sudo: yes
+  shell: gem install fpm
+  tags:
+    - prepare
 
-# See: http://goo.gl/cz9Lnd
-# - name: Install logstash-forwarder init script.
-#   get_url:
-#     url: https://raw.github.com/elasticsearch/logstash-forwarder/master/logstash-forwarder.init
-#     dest: /etc/init.d/logstash-forwarder
-#     force: yes
-#     mode: 0655
+- name: Download logstash-forwarder
+  sudo: yes
+  shell: cd /tmp;git clone git://github.com/elasticsearch/logstash-forwarder.git;cd /tmp/logstash-forwarder;go build
+  tags:
+    - setup
+    - prepare
+
+- name: create /opt
+  sudo: yes
+  file: path=/opt/logstash-forwarder/bin/ owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }} mode=0775 state=directory
+  tags:
+    - setup
+    - prepare
+
+- name: move logstash-forwarder to /opt
+  sudo: yes
+  shell: cp /tmp/logstash-forwarder/logstash-forwarder /opt/logstash-forwarder/bin/; chmod +x /opt/logstash-forwarder/bin/logstash-forwarder
+  tags:
+    - setup
+    - prepare
+
+- name: Create logstash-forwarder init file.
+  sudo: yes
+  template:
+    src: logstash-forwarder.init
+    dest: /etc/init.d/logstash-forwarder
+    mode: 0755
+  notify: restart logstash-forwarder
+  tags:
+    - setup
+    - init
+
+- name: update-rc
+  sudo: yes
+  shell: update-rc.d logstash-forwarder defaults
+  tags:
+    - setup
+    - init
+
 
 - name: Create logstash-forwarder configuration file.
+  sudo: yes
   template:
     src: logstash-forwarder.j2
     dest: /etc/logstash-forwarder
     mode: 0644
   notify: restart logstash-forwarder
+  tags:
+    - setup
+    - conf
 
-- name: Ensure Logstash SSL key pair directory exists.
-  file:
-    path: "{{ logstash_ssl_dir }}"
-    state: directory
+- name: Ensure cert directory exists
+  file: path={{ logstash_ssl_dir }} owner={{ ansible_ssh_user }} group={{ ansible_ssh_user }} mode=0775 state=directory
+  sudo: yes
+  tags:
+    - setup
+    - ssl
 
 - name: Copy SSL key and cert for logstash-forwarder.
+  sudo: yes
   copy:
-    src: "{{ logstash_ssl_dir }}/{{ logstash_forwarder_ssl_certificate_file }}"
-    dest: "{{ logstash_ssl_dir }}/{{ logstash_forwarder_ssl_certificate_file }}"
+    src: "logstash-forwarder.crt"
+    dest: "{{ logstash_ssl_dir }}/logstash-forwarder.crt"
     mode: 0644
   notify: restart logstash-forwarder
+  tags:
+    - setup
+    - ssl
 
 - name: Ensure logstash-forwarder is started and enabled on boot.
+  sudo: yes
   service: name=logstash-forwarder state=started enabled=yes
+  tags:
+    - setup
+    - service

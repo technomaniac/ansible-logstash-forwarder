@@ -1,2 +1,13 @@
 [logstash-forwarder]
-128.199.231.52
+45.56.113.41 ansible_ssh_user=ubuntu
+45.56.115.43 ansible_ssh_user=ubuntu
+192.155.94.214 ansible_ssh_user=ubuntu
+173.230.141.169 ansible_ssh_user=ubuntu
+23.239.19.145 ansible_ssh_user=ubuntu
+173.230.129.250 ansible_ssh_user=ubuntu
+192.155.92.191 ansible_ssh_user=ubuntu
+192.155.95.109 ansible_ssh_user=ubuntu
+23.92.30.105 ansible_ssh_user=ubuntu
+198.74.52.233 ansible_ssh_user=ubuntu
+50.116.43.18 ansible_ssh_user=ubuntu
+

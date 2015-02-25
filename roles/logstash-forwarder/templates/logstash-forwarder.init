@@ -10,11 +10,6 @@
 #                    placed in /etc/init.d.
 ### END INIT INFO
 
-# See: http://goo.gl/cz9Lnd
-# Once https://github.com/elasticsearch/logstash-forwarder/pull/196 is merged,
-# update this role to pull directly from the new .rpm.init file instead of
-# copying this file.
-
 # Author: Jordan Sissel <jordan.sissel@dreamhost.com>
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
@@ -22,7 +17,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="log shipper"
 NAME=logstash-forwarder
 DAEMON=/opt/logstash-forwarder/bin/logstash-forwarder
-DAEMON_ARGS="-config /etc/logstash-forwarder -spool-size 100 -log-to-syslog"
+DAEMON_ARGS="-config /etc/logstash-forwarder -spool-size 100"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 

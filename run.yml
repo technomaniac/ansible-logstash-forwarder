@@ -1,5 +1,5 @@
 ---
 - hosts: logstash-forwarder
-  remote_user: root
+  #remote_user: vagrant
   roles:
     - logstash-forwarder
